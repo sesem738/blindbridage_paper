@@ -128,55 +128,55 @@ A POMDP formulation is necessary rather than a standard MDP because the leader r
 
 We adopt a two-phase privileged learning framework~\cite{lee2020learning} to train the leader's navigation policy for asymmetric multi-robot guidance. The central idea is to decouple the problem of \emph{what to do} from the problem of \emph{what can be observed}: a teacher policy first learns an expert coordination strategy with access to privileged ground-truth information available only in simulation, and a student policy subsequently learns to reproduce that strategy using only the sensor observations available during real-world deployment. This decomposition addresses two challenges simultaneously: (i) it simplifies policy optimization by allowing the teacher to train under full state observability, avoiding the compounding difficulties of partial observability and exploration; and (ii) it produces a deployable student that operates entirely within the observation constraints of the physical robot, bridging the simulation-to-reality gap without requiring domain randomization of the privileged state channels.
 
-\subsubsection{Phase 1: Teacher Policy Training}
+% \subsubsection{Phase 1: Teacher Policy Training}
 
-In the first phase, we train a teacher policy $\pi_T$ in simulation using deep reinforcement learning with access to the full environment state $s_t \in \mathcal{S}$. The privileged state encompasses ground-truth information that is not available to the physical robot's onboard sensors, including the exact positions and velocities of all obstacles, the precise relative pose between the leader and follower, the global map of the environment, and the follower's true kinematic state. Formally, the teacher receives the privileged observation $o_t^T = \phi_T(s_t)$, where $\phi_T$ is a deterministic mapping from the full state to the teacher's observation, and learns a policy $\pi_T(a_t \mid o_t^T)$ that maximizes the expected cumulative discounted reward:
-%
-\begin{equation}
-    \pi_T^{*} = \arg\max_{\pi_T} \; \mathbb{E}_{\pi_T}\left[\sum_{t=0}^{T} \gamma^t R(s_t, a_t)\right].
-    \label{eq:teacher_objective}
-\end{equation}
-%
-Because the teacher observes the complete state, its training reduces to a fully observable RL problem, eliminating the need to learn implicit state estimation from noisy, partial sensor data. This allows the optimization to focus entirely on discovering effective coordination strategies, specifically how the leader should plan its own trajectory, anticipate obstacles on the follower's path, and time the communicated motion commands for safe and efficient joint navigation. The teacher is trained using Proximal Policy Optimization (PPO) in a parallelized simulation environment with randomized obstacle configurations, initial poses, and goal locations, ensuring that the resulting policy generalizes across diverse scenarios.
+% In the first phase, we train a teacher policy $\pi_T$ in simulation using deep reinforcement learning with access to the full environment state $s_t \in \mathcal{S}$. The privileged state encompasses ground-truth information that is not available to the physical robot's onboard sensors, including the exact positions and velocities of all obstacles, the precise relative pose between the leader and follower, the global map of the environment, and the follower's true kinematic state. Formally, the teacher receives the privileged observation $o_t^T = \phi_T(s_t)$, where $\phi_T$ is a deterministic mapping from the full state to the teacher's observation, and learns a policy $\pi_T(a_t \mid o_t^T)$ that maximizes the expected cumulative discounted reward:
+% %
+% \begin{equation}
+%     \pi_T^{*} = \arg\max_{\pi_T} \; \mathbb{E}_{\pi_T}\left[\sum_{t=0}^{T} \gamma^t R(s_t, a_t)\right].
+%     \label{eq:teacher_objective}
+% \end{equation}
+% %
+% Because the teacher observes the complete state, its training reduces to a fully observable RL problem, eliminating the need to learn implicit state estimation from noisy, partial sensor data. This allows the optimization to focus entirely on discovering effective coordination strategies, specifically how the leader should plan its own trajectory, anticipate obstacles on the follower's path, and time the communicated motion commands for safe and efficient joint navigation. The teacher is trained using Proximal Policy Optimization (PPO) in a parallelized simulation environment with randomized obstacle configurations, initial poses, and goal locations, ensuring that the resulting policy generalizes across diverse scenarios.
 
-\subsubsection{Phase 2: Knowledge Distillation to Student Policy}
+% \subsubsection{Phase 2: Knowledge Distillation to Student Policy}
 
-In the second phase, the trained teacher's knowledge is distilled into a student policy $\pi_S$ through supervised learning. Crucially, the student receives only the observation $o_t^S = \phi_S(s_t)$, where $\phi_S$ maps the state to the subset of information that is available from the leader's onboard sensors at deployment. This observation includes the leader's local sensor readings (e.g., depth or LiDAR scans within a limited field of view), the leader's own odometry, and the estimated relative position of the follower obtained through onboard sensing. The student explicitly lacks the privileged channels available to the teacher, such as exact obstacle positions beyond the sensor range, the global map layout, and the follower's true kinematic state.
+% In the second phase, the trained teacher's knowledge is distilled into a student policy $\pi_S$ through supervised learning. Crucially, the student receives only the observation $o_t^S = \phi_S(s_t)$, where $\phi_S$ maps the state to the subset of information that is available from the leader's onboard sensors at deployment. This observation includes the leader's local sensor readings (e.g., depth or LiDAR scans within a limited field of view), the leader's own odometry, and the estimated relative position of the follower obtained through onboard sensing. The student explicitly lacks the privileged channels available to the teacher, such as exact obstacle positions beyond the sensor range, the global map layout, and the follower's true kinematic state.
 
-The student is trained by rolling out the teacher policy in simulation, collecting paired datasets of student observations and teacher actions $\mathcal{D} = \{(o_t^S, a_t^T)\}_{t=1}^{N}$, where $a_t^T \sim \pi_T(a_t \mid o_t^T)$. The student policy is then optimized to minimize the behavioral divergence from the teacher:
-%
-\begin{equation}
-    \pi_S^{*} = \arg\min_{\pi_S} \; \mathbb{E}_{(o^S, a^T) \sim \mathcal{D}}\left[\mathcal{L}\!\left(\pi_S(o^S),\; a^T\right)\right],
-    \label{eq:student_objective}
-\end{equation}
-%
-where $\mathcal{L}$ is a supervised loss function (e.g., mean squared error for continuous actions). Because the training data is generated by rolling out the expert teacher, the student learns to imitate the teacher's decisions while being conditioned exclusively on deployment-available observations. In effect, the distillation process compresses the teacher's privileged reasoning into a mapping from limited sensory input to expert actions.
+% The student is trained by rolling out the teacher policy in simulation, collecting paired datasets of student observations and teacher actions $\mathcal{D} = \{(o_t^S, a_t^T)\}_{t=1}^{N}$, where $a_t^T \sim \pi_T(a_t \mid o_t^T)$. The student policy is then optimized to minimize the behavioral divergence from the teacher:
+% %
+% \begin{equation}
+%     \pi_S^{*} = \arg\min_{\pi_S} \; \mathbb{E}_{(o^S, a^T) \sim \mathcal{D}}\left[\mathcal{L}\!\left(\pi_S(o^S),\; a^T\right)\right],
+%     \label{eq:student_objective}
+% \end{equation}
+% %
+% where $\mathcal{L}$ is a supervised loss function (e.g., mean squared error for continuous actions). Because the training data is generated by rolling out the expert teacher, the student learns to imitate the teacher's decisions while being conditioned exclusively on deployment-available observations. In effect, the distillation process compresses the teacher's privileged reasoning into a mapping from limited sensory input to expert actions.
 
-\subsubsection{Information Asymmetry and Sim-to-Real Transfer}
+% \subsubsection{Information Asymmetry and Sim-to-Real Transfer}
 
-The information asymmetry between the teacher and student is a deliberate design choice that underpins the framework's effectiveness for sim-to-real transfer. Table~\ref{tab:info_asymmetry} summarizes the observation channels available to each policy.
+% The information asymmetry between the teacher and student is a deliberate design choice that underpins the framework's effectiveness for sim-to-real transfer. Table~\ref{tab:info_asymmetry} summarizes the observation channels available to each policy.
 
-\begin{table}[h]
-\centering
-\caption{Information available to the teacher vs.\ student policy.}
-\label{tab:info_asymmetry}
-\begin{tabular}{l c c}
-\hline
-\textbf{Observation Channel} & \textbf{Teacher} & \textbf{Student} \\
-\hline
-Global obstacle positions & \checkmark & -- \\
-Environment map / layout & \checkmark & -- \\
-Follower true kinematic state & \checkmark & -- \\
-Leader local sensor readings & \checkmark & \checkmark \\
-Leader odometry & \checkmark & \checkmark \\
-Estimated follower relative pose & \checkmark & \checkmark \\
-\hline
-\end{tabular}
-\end{table}
+% \begin{table}[h]
+% \centering
+% \caption{Information available to the teacher vs.\ student policy.}
+% \label{tab:info_asymmetry}
+% \begin{tabular}{l c c}
+% \hline
+% \textbf{Observation Channel} & \textbf{Teacher} & \textbf{Student} \\
+% \hline
+% Global obstacle positions & \checkmark & -- \\
+% Environment map / layout & \checkmark & -- \\
+% Follower true kinematic state & \checkmark & -- \\
+% Leader local sensor readings & \checkmark & \checkmark \\
+% Leader odometry & \checkmark & \checkmark \\
+% Estimated follower relative pose & \checkmark & \checkmark \\
+% \hline
+% \end{tabular}
+% \end{table}
 
-The teacher's privileged access to the full ground-truth state allows it to learn a near-optimal coordination strategy unencumbered by sensor noise or occlusions. The student, by construction, observes only the modalities that will be physically available on the leader robot. This asymmetry ensures that no component of the deployed policy depends on simulation-specific information, and therefore the sim-to-real gap is confined to the fidelity of the sensor simulation (e.g., depth rendering, noise models) rather than the availability of entire observation channels. Because the student never receives privileged state during training, it is forced to extract the behaviorally relevant features from its limited observations, effectively learning an implicit belief representation that compensates for the missing information.
+% The teacher's privileged access to the full ground-truth state allows it to learn a near-optimal coordination strategy unencumbered by sensor noise or occlusions. The student, by construction, observes only the modalities that will be physically available on the leader robot. This asymmetry ensures that no component of the deployed policy depends on simulation-specific information, and therefore the sim-to-real gap is confined to the fidelity of the sensor simulation (e.g., depth rendering, noise models) rather than the availability of entire observation channels. Because the student never receives privileged state during training, it is forced to extract the behaviorally relevant features from its limited observations, effectively learning an implicit belief representation that compensates for the missing information.
 
-This two-phase pipeline offers several practical advantages. First, training the teacher with privileged information yields higher-quality expert demonstrations than would be achieved by training directly under partial observability, where the coupled challenges of exploration and state estimation significantly slow convergence. Second, the supervised distillation step is more sample-efficient and stable than end-to-end RL training of the student, since the learning signal comes from an already-converged expert rather than sparse environmental rewards. Third, the modular architecture allows the teacher and student to be developed and debugged independently: the teacher can be validated against ground-truth metrics in simulation, and the student can be evaluated by measuring action-prediction accuracy before any physical deployment.
+% This two-phase pipeline offers several practical advantages. First, training the teacher with privileged information yields higher-quality expert demonstrations than would be achieved by training directly under partial observability, where the coupled challenges of exploration and state estimation significantly slow convergence. Second, the supervised distillation step is more sample-efficient and stable than end-to-end RL training of the student, since the learning signal comes from an already-converged expert rather than sparse environmental rewards. Third, the modular architecture allows the teacher and student to be developed and debugged independently: the teacher can be validated against ground-truth metrics in simulation, and the student can be evaluated by measuring action-prediction accuracy before any physical deployment.
 
 
 \section{Experiments and Results}
