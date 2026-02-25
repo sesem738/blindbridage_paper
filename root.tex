@@ -39,16 +39,19 @@ One Eye Leads the Blind: Asymmetric Multi-Robot Navigation with Visual Guidance
 \titleformat{\paragraph}[block]{\bfseries}{}{0pt}{}
 \titlespacing*{\paragraph}{0pt}{1ex}{0.5ex}
 
-\author{Albert Author$^{1}$ and Bernard D. Researcher$^{2}$% <-this % stops a space
-\thanks{*This work was not supported by any organization}% <-this % stops a space
-\thanks{$^{1}$Albert Author is with Faculty of Electrical Engineering, Mathematics and Computer Science,
-        University of Twente, 7500 AE Enschede, The Netherlands
-        {\tt\small albert.author@papercept.net}}%
-\thanks{$^{2}$Bernard D. Researcheris with the Department of Electrical Engineering, Wright State University,
-        Dayton, OH 45435, USA
-        {\tt\small b.d.researcher@ieee.org}}%
+% \author{Albert Author$^{1}$ and Bernard D. Researcher$^{2}$% <-this % stops a space
+% \thanks{*This work was not supported by any organization}% <-this % stops a space
+% \thanks{$^{1}$Albert Author is with Faculty of Electrical Engineering, Mathematics and Computer Science,
+%         University of Twente, 7500 AE Enschede, The Netherlands
+%         {\tt\small albert.author@papercept.net}}%
+% \thanks{$^{2}$Bernard D. Researcheris with the Department of Electrical Engineering, Wright State University,
+%         Dayton, OH 45435, USA
+%         {\tt\small b.d.researcher@ieee.org}}%
+% }
+\author{Anonymous Authors $^{1}$% <-this % stops a space
+\thanks{*Support is anonymous}% <-this % stops a space
+\thanks{$^{1}$Authors institutions and contact information are anonymous }%
 }
-
 
 \begin{document}
 
@@ -72,7 +75,7 @@ In field operations where robots are exposed to extreme environments, the risk o
 Unmanned robotic systems are progressively being deployed in hazardous 
 environments, including reconnaissance, search and rescue, and 
 disaster response, where human presence is dangerous or not feasible~\cite{wang2025multi}. 
-However, these missions often occur under harsh conditions that accelerate sensor degradation: dust and debris occlude cameras, electromagnetic interference disrupts lidar, and physical impacts could damage the perception hardware~\cite{ebadi2022present}. When a robot's sensors fail mid-mission in remote or inaccessible locations (e.g., underground tunnels, disaster sites, or enemy territory), the most likely response is to abort the mission and abandon the robot, resulting in costly equipment loss and incomplete objectives. This raises the question of whether a functional teammate can actively guide a sensor-impaired robot to safety or mission completion rather than abandoning it.
+However, these missions often occur under harsh conditions degrade sensors: dust and debris occlude cameras, electromagnetic interference disrupts lidar, and physical impacts can damage hardware~\cite{ebadi2022present}. When a robot's sensors fail mid-mission in remote or inaccessible locations, the most likely response is to abort the mission and abandon the robot.  This results in costly equipment loss and incomplete objectives. This raises the question of whether a functional teammate can actively guide a sensor-impaired robot to safety or mission completion rather than abandoning it.
 
 Asymmetric coordination strategies in multi-robot systems have been proposed to address mismatched capabilities among teammates. One approach uses a fixed sensor infrastructure that performs perception and localization on the robots' behalf, enabling effective navigation and coordination despite limited onboard sensing. This approach may not work in situations where setting up a fixed sensor infrastructure in the environment is not possible. For example, in dangerous environments that are being explored for the first time, it may be infeasible to set up such infrastructure.
 
@@ -107,11 +110,11 @@ The methodology of transferring navigational competency from a knowledgeable age
 
 \subsection{Multi-Robot Coordination and Heterogeneous Teams}
 
-Multi-robot navigation under decentralized, partially observable conditions has been widely studied. Chen et al.~\cite{chen2017decentralized} demonstrate that deep reinforcement learning can learn cooperative collision-avoidance policies for multi-agent systems, enabling each robot to make navigation decisions using only its local observations. Bettini et al.~\cite{bettini2023heterogeneous} introduce HetGPPO, a paradigm for training heterogeneous multi-agent reinforcement learning policies that exploits diversity in physical and sensory capabilities, showing that heterogeneity can improve both task performance and resilience to noise. In traditional multi-robot formation, behavior-based strategies~\cite{balch2002behavior} and collective transport frameworks~\cite{farivarnejad2022multirobot} coordinate teams through reactive controllers, but assume homogeneous or near-homogeneous sensing. Leader--follower formation control~\cite{petrinic2013leader, wang2019vision} has been widely investigated, yet existing approaches typically require the follower to retain at least minimal onboard sensing, such as vision-based tracking of the leader, to localize within the environment. The assumption that breaks down when perception hardware fails entirely.
+Multi-robot navigation under decentralized, partially observable conditions has been widely studied. Chen et al.~\cite{chen2017decentralized} demonstrate that deep reinforcement learning can learn cooperative collision-avoidance policies for multi-agent systems, enabling each robot to make navigation decisions using only its local observations. Bettini et al.~\cite{bettini2023heterogeneous} introduce HetGPPO, a paradigm for training heterogeneous multi-agent reinforcement learning policies that exploit diversity in physical and sensory capabilities, showing that heterogeneity can improve both task performance and resilience to noise. In traditional multi-robot formation, behavior-based strategies~\cite{balch2002behavior} and collective transport frameworks~\cite{farivarnejad2022multirobot} coordinate teams through reactive controllers, but they assume homogeneous or near-homogeneous sensing. Leader-follower formation control~\cite{petrinic2013leader, wang2019vision} has been widely investigated; however, existing approaches typically require the follower to retain at least minimal onboard sensing, such as vision-based tracking of the leader, to localize within the environment. This assumption breaks down when perception hardware fails entirely.
 
 \subsection{Assistive Guidance and Human--Robot Interaction}
 
-The concept of asymmetric guidance is well established in human--robot interaction (HRI) for the visually impaired. Hwang et al.~\cite{hwang2025guidenav} developed GuideNav, a robotic guide-dog system that uses vision-based teach-and-repeat methods to guide blind humans over kilometer-scale routes without LiDAR. Their success suggests that vision-based topological maps can serve as a viable, low-bandwidth mechanism for linking a sighted guide with a vision-less agent. Complementarily, Xiao et al.~\cite{xiao2021robotic} present a robotic guide cane that combines obstacle detection with haptic feedback to assist visually impaired users in indoor environments, demonstrating that carefully designed communication channels can substitute for a user's absent perception. These HRI systems demonstrate the feasibility of asymmetric navigation but rely on a human in the loop; translating these principles to fully autonomous robot--robot teams remains an open challenge.
+The concept of asymmetric guidance is well established in human-robot interaction (HRI) for the visually impaired. Hwang et al.~\cite{hwang2025guidenav} developed GuideNav, a robotic guide-dog system that uses vision-based teach-and-repeat methods to guide blind humans over kilometer-scale routes without LiDAR. Their success suggests that vision-based topological maps can serve as a viable, low-bandwidth mechanism for linking a sighted guide with a vision-less agent. Complementarily, Xiao et al.~\cite{xiao2021robotic} present a robotic guide cane that combines obstacle detection with haptic feedback to assist visually impaired users in indoor environments, demonstrating that carefully designed communication channels can substitute for a user's absent perception. These HRI systems demonstrate the feasibility of asymmetric navigation but rely on a human in the loop; translating these principles to fully autonomous robot-robot teams remains an open challenge.
 
 In contrast to prior work, our framework targets the most extreme form of asymmetry: a leader robot with full visual perception must guide a follower that possesses \emph{no} exteroceptive sensors at all, without relying on any fixed environmental infrastructure. Unlike infrastructure-based methods~\cite{verma2025navigation, savkin2020robot}, we require no pre-installed sensors. Unlike privileged-learning approaches~\cite{lee2020learning, qu2024versatile}, we do not assume that each agent retains residual onboard perception. And unlike HRI guidance systems~\cite{hwang2025guidenav, xiao2021robotic}, both agents are fully autonomous. We combine privileged knowledge distillation with an explicit inter-robot communication channel for motion commands, enabling the sensorless follower to navigate cluttered, unknown environments purely through the leader's situational awareness.
 
