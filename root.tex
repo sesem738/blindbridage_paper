@@ -30,11 +30,14 @@
 \usepackage{amsmath} % assumes amsmath package installed
 \usepackage{amssymb}  % assumes amsmath package installed
 \usepackage{cite}
+\usepackage{titlesec}
 
 \title{\LARGE \bf
 One Eye Leads the Blind: Asymmetric Multi-Robot Navigation with Visual Guidance
 }
 
+\titleformat{\paragraph}[block]{\bfseries}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1ex}{0.5ex}
 
 \author{Albert Author$^{1}$ and Bernard D. Researcher$^{2}$% <-this % stops a space
 \thanks{*This work was not supported by any organization}% <-this % stops a space
@@ -126,7 +129,7 @@ A POMDP formulation is necessary rather than a standard MDP because the leader r
 
 \subsection{System Overview}
 
-We adopt a two-phase privileged learning framework~\cite{lee2020learning} to train the leader's navigation policy for asymmetric multi-robot guidance. The central idea is to decouple the problem of \emph{what to do} from the problem of \emph{what can be observed}: a teacher policy first learns an expert coordination strategy with access to privileged ground-truth information available only in simulation, and a student policy subsequently learns to reproduce that strategy using only the sensor observations available during real-world deployment. This decomposition addresses two challenges simultaneously: (i) it simplifies policy optimization by allowing the teacher to train under full state observability, avoiding the compounding difficulties of partial observability and exploration; and (ii) it produces a deployable student that operates entirely within the observation constraints of the physical robot, bridging the simulation-to-reality gap without requiring domain randomization of the privileged state channels.
+We adopt a two-phase student-teacher learning framework~\cite{lee2020learning} to train the leader's navigation policy for asymmetric multi-robot guidance. The central idea is to decouple the problem of \emph{what to do} from the problem of \emph{what can be observed}: a teacher policy first learns an expert coordination strategy with access to privileged ground-truth information available only in simulation, and a student policy subsequently learns to reproduce that strategy using only the sensor observations available during real-world deployment. This decomposition addresses two challenges simultaneously: (i) it simplifies policy optimization by allowing the teacher to train under full state observability, avoiding the compounding difficulties of partial observability and exploration; and (ii) it produces a deployable student that operates entirely within the observation constraints of the physical robot, bridging the simulation-to-reality gap without requiring domain randomization of the privileged state channels.
 
 
 
