@@ -131,40 +131,6 @@ A POMDP formulation is necessary rather than a standard MDP because the leader r
 
 We adopt a two-phase student-teacher learning framework~\cite{lee2020learning} to train the leader's navigation policy for asymmetric multi-robot guidance. The central idea is to decouple the problem of \emph{what to do} from the problem of \emph{what can be observed}: a teacher policy first learns an expert coordination strategy with access to privileged ground-truth information available only in simulation, and a student policy subsequently learns to reproduce that strategy using only the sensor observations available during real-world deployment. This decomposition addresses two challenges simultaneously: (i) it simplifies policy optimization by allowing the teacher to train under full state observability, avoiding the compounding difficulties of partial observability and exploration; and (ii) it produces a deployable student that operates entirely within the observation constraints of the physical robot, bridging the simulation-to-reality gap without requiring domain randomization of the privileged state channels.
 
-\subsubsection{Phase 1: Teacher Policy Training}
-
-In the first phase, we train a teacher policy $\pi_T$ end-to-end in simulation using deep RL with access to privileged information. Formally, the teacher receives the privileged observation $o_t^T = \phi_T(s_t)$, where $\phi_T$ is a deterministic mapping from the full state to the teacher's observation, and learns a policy $\pi_T(a_t \mid o_t^T)$ to achieve mapless navigation by maximizing the expected cumulative reward over each episode.
-
-To facilitate efficient learning, we use raycaster information as the privileged information to train the teacher policy. The raycaster data captures the heights of the terrain and items near the robot. This privileged information allows for efficient training, as the raycasts serve as a lightweight proxy for depth images that are significantly cheaper to compute.
-
-The reward function considers the various aspects of the cooperative navigation task. It consists of three primary components: (1) a progress reward designed to get the faulty agent to its goal location, which increases with the closing distance to the goal; (2) an active perception reward that encourages the healthy agent to look around, ensuring it can effectively guide the faulty agent around obstacles; and (3) safety penalties that discourage collision of the healthy agent or the faulty agent.
-
-For us to achieve a robust policy, we randomize the shape of the faulty agent
-
-\subsubsection{Phase 2: Knowledge Distillation to Student Policy}
-
-
-
-
-
-\begin{table}[h]
-\centering
-\caption{Information available to the teacher vs.\ student policy.}
-\label{tab:info_asymmetry}
-\begin{tabular}{l c c}
-\hline
-\textbf{Observation Channel} & \textbf{Teacher} & \textbf{Student} \\
-\hline
-Global obstacle positions & \checkmark & -- \\
-Environment map / layout & \checkmark & -- \\
-Follower true kinematic state & \checkmark & -- \\
-Leader local sensor readings & \checkmark & \checkmark \\
-Leader odometry & \checkmark & \checkmark \\
-Estimated follower relative pose & \checkmark & \checkmark \\
-\hline
-\end{tabular}
-\end{table}
-
 
 
 
