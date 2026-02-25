@@ -27,8 +27,8 @@
 %\usepackage{epsfig} % for postscript graphics files
 %\usepackage{mathptmx} % assumes new font selection scheme installed
 %\usepackage{times} % assumes new font selection scheme installed
-%\usepackage{amsmath} % assumes amsmath package installed
-%\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
 \usepackage{cite}
 
 \title{\LARGE \bf
@@ -113,13 +113,23 @@ The concept of asymmetric guidance is well established in human--robot interacti
 In contrast to prior work, our framework targets the most extreme form of asymmetry: a leader robot with full visual perception must guide a follower that possesses \emph{no} exteroceptive sensors at all, without relying on any fixed environmental infrastructure. Unlike infrastructure-based methods~\cite{verma2025navigation, savkin2020robot}, we require no pre-installed sensors. Unlike privileged-learning approaches~\cite{lee2020learning, qu2024versatile}, we do not assume that each agent retains residual onboard perception. And unlike HRI guidance systems~\cite{hwang2025guidenav, xiao2021robotic}, both agents are fully autonomous. We combine privileged knowledge distillation with an explicit inter-robot communication channel for motion commands, enabling the sensorless follower to navigate cluttered, unknown environments purely through the leader's situational awareness.
 
 
-\section{Problem Formulation}
+\section{PROBLEM FORMULATION}
 
-Our goal 
+Asymmetric multi-robot navigation, where a fully equipped leader must guide a sensorless follower through unknown, cluttered environments, presents fundamental challenges for conventional planning paradigms. Classical approaches would require exhaustive hand-engineering of reactive rules to anticipate the combinatorial diversity of obstacle configurations, robot-pair geometries, and communication-induced dynamics. Moreover, the leader must reason jointly about its own collision avoidance, the follower's safety, and the temporal coordination of communicated motion commands, all under partial observability. Deep reinforcement learning (DRL) offers a principled alternative: given a well-structured problem formulation, a DRL agent can discover effective coordination strategies directly from experience, without requiring explicit enumeration of environmental cases. We therefore adopt DRL and formulate the asymmetric navigation task as a Partially Observable Markov Decision Process (POMDP).
+
+\subsection{POMDP Definition}
+
+We model the leader's decision-making problem as a POMDP defined by the tuple $\langle \mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \mathcal{\Omega}, \mathcal{O}, \gamma \rangle$, where $\mathcal{S}$ is the state space, $\mathcal{A}$ is the action space, $\mathcal{T}$ is the state transition function, $\mathcal{R}$ is the reward function, $\mathcal{\Omega}$ is the observation space, $\mathcal{O}$ is the observation function, and $\gamma \in [0,1)$ is the discount factor. The objective is to learn a policy $\pi(a_t \mid o_{1:t})$ that maximizes the expected cumulative discounted reward $\mathbb{E}\left[\sum_{t=0}^{T} \gamma^t R(s_t, a_t)\right]$.
+
+A POMDP is necessary rather than a standard MDP because the leader robot does not have access to the complete environment state. Although the leader is equipped with onboard perception, its sensors provide only a local, noisy view of the surroundings. The true state, including unobserved obstacle regions, the follower's exact pose uncertainty, and future environmental dynamics, remains hidden. The leader must therefore act on partial observations and implicitly maintain a belief over the underlying state.
+
+
+
 
 \section{Methodology}
 
 \section{Experiments and Results}
+\label{sec:experiments}
 
 \section{Real-World Demonstration}
 
