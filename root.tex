@@ -142,13 +142,10 @@ To facilitate efficient learning, we use raycaster information as the privileged
 
 The reward function considers the various aspects of the cooperative navigation task. It consists of three primary components: (1) a progress reward designed to get the faulty agent to its goal location, which increases with the closing distance to the goal; (2) an active perception reward that encourages the healthy agent to look around, ensuring it can effectively guide the faulty agent around obstacles; and (3) safety penalties that discourage collision of the healthy agent or the faulty agent.
 
-For us to achieve a robust policy, we randomize the shape of the faulty agent
 
 \subsubsection{Phase 2: Knowledge Distillation to Student Policy}
 
-
-
-
+In the second phase of training, we use supervised learning to distill the expert behavior learned by the teacher into a student policy. This student policy utilizes an observation space designed to match the sensory inputs that will be available during physical deployment on the real robot. Specifically, the student operates on a stream of front-facing depth images combined with proprioceptive data state. Similar to prior work in legged locomotion with egocentric vision~\cite{agarwal2022legged}, we employ Dataset Aggregation (DAgger) to robustly train the student policy, iteratively minimizing the action discrepancy between the student's predictions and the teacher's expert actions.
 
 \begin{table}[h]
 \centering
@@ -169,9 +166,10 @@ Estimated follower relative pose & \checkmark & \checkmark \\
 \end{table}
 
 
+\section{Experiments}
+\subsection{Experimental Setup}
 
 
-\section{Experiments and Results}
 \label{sec:experiments}
 
 \section{Real-World Demonstration}
